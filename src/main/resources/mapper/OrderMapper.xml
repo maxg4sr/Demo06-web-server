@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tw.hp.demo06.web.server.mapper.OrderMapper">
+
+    <!--  int insert(Brand brand); 下方VALUES屬性要與entity Brand
+    名字要對應上故要去除下滑線並駝峰命名 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            order_request(
+            name, person, age, phone, line,
+            email, project, location, date, how, message
+        ) VALUES (
+            #{name}, #{person}, #{age}, #{phone}, #{line},
+            #{email}, #{project}, #{location}, #{date}, #{how}, #{message}
+                 )
+    </insert>
+
+    <!--  int deleteById(Long id);  -->
+    <delete id="deleteById">
+        DELETE FROM order_request WHERE id=#{id}
+    </delete>
+
+    <!--  int deleteByIds(Long... ids); separator=分割符號 -->
+    <delete id="deleteByIds">
+        DELETE FROM order_request WHERE id in (
+        <foreach collection="array" item="id" separator=",">
+            #{id}
+        </foreach>
+        );
+    </delete>
+
+    <!--  int updateNameById(Long id,String name);  -->
+    <update id="updateNameById">
+        UPDATE order_request SET name=#{name} WHERE id=#{id}
+    </update>
+
+    <!--  int updateById(Brand brand); <set>解決逗號的問題 -->
+    <update id="updateById">
+        UPDATE
+        order_request
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="person != null">
+                person=#{person},
+            </if>
+            <if test="age != null">
+                age=#{age},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="line != null">
+                line=#{line},
+            </if>
+            <if test="email != null">
+                email=#{email},
+            </if>
+            <if test="project != null">
+                project=#{project},
+            </if>
+            <if test="location != null">
+                location=#{location},
+            </if>
+            <if test="date != null">
+                date=#{date},
+            </if>
+            <if test="how != null">
+                how=#{how},
+            </if>
+            <if test="message != null">
+                message=#{message},
+            </if>
+        </set>
+        WHERE
+        id=#{id}
+    </update>
+
+    <!--  int count();  -->
+    <select id="count" resultType="int">
+        SELECT count(*) FROM order_request;
+    </select>
+
+    <!--  OrderDetailVO getById(Long id);  -->
+    <select id="getById" resultMap="DetailResultMap">
+        SELECT
+            id, name, person, age, phone, line, email,project, how, location,
+            date, message
+        FROM
+            order_request
+        WHERE
+            id = #{id}
+    </select>
+    <resultMap id="DetailResultMap" type="tw.hp.demo06.web.server.pojo.vo.OrderDetailVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="person" property="person"/>
+        <result column="age" property="age"/>
+        <result column="phone" property="phone"/>
+        <result column="line" property="line"/>
+        <result column="email" property="email"/>
+        <result column="project" property="project"/>
+        <result column="how" property="how"/>
+        <result column="location" property="location"/>
+        <!-- 配置自定义的 TypeHandler -->
+        <result column="date" property="date" />
+<!--        <result column="datetime" property="datetime"/>-->
+        <result column="message" property="message"/>
+    </resultMap>
+
+    <!--  int countByName(String name);  -->
+    <select id="countByName" resultType="int">
+        SELECT count(*) FROM order_request WHERE name=#{name}
+    </select>
+
+    <!--  List<BrandListItemVO> list(); 利用sql封裝代碼的方法<include refid="ListItemQueryFields"/> -->
+    <select id="list" resultMap="ListItemResultMap">
+        SELECT
+        <include refid="ListItemQueryFields"/>
+        FROM
+        order_request
+        ORDER BY
+        id;
+    </select>
+    <sql id="ListItemQueryFields">
+        <if test="true">
+            id, name, person,age, phone, line, email ,project, location, date, how, message
+        </if>
+    </sql>
+    <resultMap id="ListItemResultMap" type="tw.hp.demo06.web.server.pojo.vo.OrderListItemVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="person" property="person"/>
+        <result column="age" property="age"/>
+        <result column="phone" property="phone"/>
+        <result column="line" property="line"/>
+        <result column="email" property="email"/>
+        <result column="project" property="project"/>
+        <result column="location" property="location"/>
+        <result column="date" property="date" />
+        <result column="how" property="how"/>
+        <result column="message" property="message"/>
+    </resultMap>
+
+</mapper>

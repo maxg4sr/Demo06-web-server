@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="tw.hp.demo06.web.server.mapper.RegMapper">
+
+    <!--  int insert(Brand brand); 下方VALUES屬性要與entity Brand
+    名字要對應上故要去除下滑線並駝峰命名 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            reg(
+            name, phone, gender, age, line, email ,date
+        ) VALUES (
+            #{name}, #{phone}, #{gender}, #{age}, #{line}, #{email},#{date, jdbcType=DATE}
+                 )
+    </insert>
+
+    <!--  int deleteById(Long id);  -->
+    <delete id="deleteById">
+        DELETE FROM reg WHERE id=#{id}
+    </delete>
+
+    <!--  int deleteByIds(Long... ids); separator=分割符號 -->
+    <delete id="deleteByIds">
+        DELETE FROM reg WHERE id in (
+        <foreach collection="array" item="id" separator=",">
+            #{id}
+        </foreach>
+        );
+    </delete>
+
+    <!--  int updateNameById(Long id,String name);  -->
+    <update id="updateNameById">
+        UPDATE reg SET name=#{name} WHERE id=#{id}
+    </update>
+
+    <!--  int updateById(Brand brand); <set>解決逗號的問題 -->
+    <update id="updateById">
+        UPDATE
+        reg
+        <set>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="phone != null">
+                phone=#{phone},
+            </if>
+            <if test="gender != null">
+                gender=#{gender},
+            </if>
+            <if test="age != null">
+                age=#{age},
+            </if>
+            <if test="line != null">
+                line=#{line},
+            </if>
+            <if test="email != email">
+                eamil=#{email},
+            </if>
+            <if test="date != null">
+            date=#{date}
+            </if>
+        </set>
+        WHERE
+        id=#{id}
+    </update>
+
+    <!--  int count();  -->
+    <select id="count" resultType="int">
+        SELECT count(*) FROM reg;
+    </select>
+
+    <!--  OrderDetailVO getById(Long id);  -->
+    <select id="getById" resultMap="DetailResultMap">
+        SELECT
+            id, name, phone, gender, age, line, email, date
+        FROM
+            reg
+        WHERE
+            id = #{id}
+    </select>
+    <resultMap id="DetailResultMap" type="tw.hp.demo06.web.server.pojo.vo.RegDetailVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="line" property="line"/>
+        <result column="email" property="email"/>
+        <!-- 配置自定义的 TypeHandler -->
+        <result column="date" property="date" jdbcType="DATE"/>
+    </resultMap>
+
+    <!--  int countByName(String name);  -->
+    <select id="countByName" resultType="int">
+        SELECT count(*) FROM reg WHERE name=#{name}
+    </select>
+
+    <!--  List<BrandListItemVO> list(); 利用sql封裝代碼的方法<include refid="ListItemQueryFields"/> -->
+    <select id="list" resultMap="ListItemResultMap">
+        SELECT
+        <include refid="ListItemQueryFields"/>
+        FROM
+        reg
+        ORDER BY
+        id;
+    </select>
+    <sql id="ListItemQueryFields">
+        <if test="true">
+            id, name, phone, gender, age, line, email, date
+        </if>
+    </sql>
+    <resultMap id="ListItemResultMap" type="tw.hp.demo06.web.server.pojo.vo.RegListItemVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="gender" property="gender"/>
+        <result column="age" property="age"/>
+        <result column="line" property="line"/>
+        <result column="email" property="email"/>
+        <result column="date" property="date" jdbcType="DATE"/>
+    </resultMap>
+
+</mapper>
